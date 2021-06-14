@@ -10,6 +10,9 @@ $(function(){
         saveUserInLocalStorage : function(userJson){
             window.localStorage.setItem('currentUser', JSON.stringify(userJson));
         },
+        removeCurrent:function(){
+            window.localStorage.removeItem('currentUser');
+        },
         getCurrentUser : function(){
             return window.localStorage.getItem('currentUser');
         },
@@ -49,12 +52,12 @@ $(function(){
         onSignIn(true);
     }
     else{
-        console.log("Not Logged In");
-        $("#notSignedIn").show();
-        $("#signedIn").hide();
         onSignIn(false);
     }
-
+    $("#lnkLogout").click(function(){
+        userObject.removeCurrent();
+        onSignIn(false);
+    })
     // On click of login button, make AJAX call.
     $("#btnLogin").on('click', function(){
         var userObj = {username: '', password:''};
@@ -67,14 +70,11 @@ $(function(){
             if(data.success){
                 toastr.success('Login Successful');
                 // front end session management
-                $("#signedIn").show();
-                $("#notSignedIn").hide();
                 toastr.sucess(data.message,'Successful');
                 userObject.saveUserInLocalStorage(data.user);
                 onSignIn(true);
             }
             else{
-                toastr.success('Login Failed');
                 toastr.error(data.message, 'Failed');
         }
         })
