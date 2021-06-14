@@ -6,10 +6,53 @@ $(function(){
         $("#signedIn").show();
         $("#notSignedIn").hide();
     }
+    var userObject = {
+        saveUserInLocalStorage : function(userJson){
+            window.localStorage.setItem('currentUser', JSON.stringify(userJson));
+        },
+        getCurrentUser : function(){
+            return window.localStorage.getItem('currentUser');
+        },
+        getCurrentUserName : function(){
+            var curUserString = this.getCurrentUser();
+            if(curUserString){
+                var json = JSON.parse(curUserString);
+                if(json && json.username)
+                    return json.username;
+                return "";
+            }
+            return "";
+        },
+        isUserLoggedIn : function(){
+            if(this.getCurrentUser()==null)
+                return false;
+            return true;
+        }
+    };
+
+    var onSignIn = function(loggedIn){
+        if(loggedIn){
+            console.log("Logged In");
+            $("#signedIn").show();
+            $("#notSignedIn").hide();
+            $("#welcomeUser").html("Welcome "+ userObject.getCurrentUserName());
+        }
+        else{
+            console.log("Not Logged In");
+            $("#notSignedIn").show();
+            $("#signedIn").hide();
+        }
+    }
+
+
+    if(userObject.isUserLoggedIn()){
+        onSignIn(true);
+    }
     else{
         console.log("Not Logged In");
         $("#notSignedIn").show();
         $("#signedIn").hide();
+        onSignIn(false);
     }
 
     // On click of login button, make AJAX call.
@@ -19,17 +62,21 @@ $(function(){
         userObj.password = $("#txtPassword").val();
         $.post( "/api/login", userObj)
         .done(function( data ) {
-            // alert( "Data Loaded: " + JSON.stringify(data) );
-            alert( "Data Loaded: " + JSON.stringify(data) );
+            //alert( "Data Loaded: " + JSON.stringify(data) );
+            console.log(JSON.stringify(data));
             if(data.success){
                 toastr.success('Login Successful');
                 // front end session management
                 $("#signedIn").show();
                 $("#notSignedIn").hide();
+                toastr.sucess(data.message,'Successful');
+                userObject.saveUserInLocalStorage(data.user);
+                onSignIn(true);
             }
             else{
                 toastr.success('Login Failed');
-            }
+                toastr.error(data.message, 'Failed');
+        }
         })
         .fail(function() {
             //alert( "error" );
