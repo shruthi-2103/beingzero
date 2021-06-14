@@ -1,16 +1,15 @@
 $(function(){
     console.log("Jquery Running");
-    var loggedIn = false;
-    if(loggedIn){
-        console.log("Logged In");
-        $("#signedIn").show();
-        $("#notSignedIn").hide();
-    }
+    // toastr.success('Toastr Running')
+
+
+    // Know details about current logged on user, allows us to talk to it rather than directly
+    // using localStorage
     var userObject = {
         saveUserInLocalStorage : function(userJson){
             window.localStorage.setItem('currentUser', JSON.stringify(userJson));
         },
-        removeCurrent:function(){
+        removeCurrentUser: function(){
             window.localStorage.removeItem('currentUser');
         },
         getCurrentUser : function(){
@@ -54,10 +53,16 @@ $(function(){
     else{
         onSignIn(false);
     }
+
+
     $("#lnkLogout").click(function(){
-        userObject.removeCurrent();
+
+        // TODO:  When session is implemented, delete session on server side also
+
+        userObject.removeCurrentUser(); // will this update UI?
         onSignIn(false);
     })
+
     // On click of login button, make AJAX call.
     $("#btnLogin").on('click', function(){
         var userObj = {username: '', password:''};
@@ -65,18 +70,20 @@ $(function(){
         userObj.password = $("#txtPassword").val();
         $.post( "/api/login", userObj)
         .done(function( data ) {
-            //alert( "Data Loaded: " + JSON.stringify(data) );
+
             console.log(JSON.stringify(data));
+
+            // Response will be of the form
+            // {success: true, message: 'Login Failed', user: null }
+            
             if(data.success){
-                toastr.success('Login Successful');
-                // front end session management
-                toastr.sucess(data.message,'Successful');
+                toastr.success(data.message, 'Successful');
                 userObject.saveUserInLocalStorage(data.user);
                 onSignIn(true);
             }
             else{
                 toastr.error(data.message, 'Failed');
-        }
+            }
         })
         .fail(function() {
             //alert( "error" );

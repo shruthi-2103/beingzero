@@ -1,13 +1,7 @@
-#!/usr/bin/env node
-
-/**
- * Module dependencies.
- */
-
 var app = require('../app');
-var debug = require('debug')('beingzero:server');
+var debug = require('debug')('beingzero-web-learn:server');
 var http = require('http');
-var config = require('../backend/config/config');
+var config = require('../backend/config/config')
 /**
  * Get port from environment and store in Express.
  */
@@ -87,5 +81,5 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
-  console.log('Started on http://localhost:'+config.web_port)
+  console.log('Started on http://localhost:'+config.web_port);
 }
