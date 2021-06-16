@@ -7,6 +7,7 @@ module.exports.createUsers = function(){
         if(collection.length==0){
             var userJson = {username : 'user', role: 'user', password:'user', email: 'user@gmail.com'};
             var adminJson = {username : 'admin', role: 'admin', password:'admin', email: 'admin@gmail.com'};
+            
             userModel.create(userJson);
             userModel.create(adminJson);
             console.log("Users Created");
